@@ -7,6 +7,10 @@ import com.loggle.rpc.sea.netty.NettyTransporter;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.net.URL;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author guomy
@@ -15,6 +19,15 @@ import java.net.URL;
 public class ClientDemo {
 
     private static  Client client;
+
+    private static Executor executor = Executors.newFixedThreadPool(8, new ThreadFactory() {
+        AtomicInteger count = new AtomicInteger(0);
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r);
+            thread.setName("sendThread-" + count.incrementAndGet());
+            return thread;
+        }
+    });
 
     public static void main(String[] args) throws Exception {
         URL configURL = Thread.currentThread().getContextClassLoader().getResource("log4j.properties");
@@ -32,9 +45,27 @@ public class ClientDemo {
             }
         }).start();
 
-        Thread.sleep(3000);
+        while (client == null || !client.isActive()) {
+            Thread.sleep(80);
+            continue;
+        }
 
-        System.out.println("start send...");
+        int limit = 30;
+        final AtomicInteger count = new AtomicInteger(0);
+        for (int i=0; i< limit; i++) {
+            executor.execute(new Runnable() {
+                public void run() {
+                    send(count);
+                }
+            });
+
+        }
+
+    }
+
+    private static void send(AtomicInteger count) {
+        int index = count.incrementAndGet();
+        System.out.println(index + "--start send...");
         Invocation invocation = new Invocation();
         invocation.setClazz(Helloword.class.getName());
 
@@ -50,17 +81,11 @@ public class ClientDemo {
         invocation.setArgs(args2);
 
         Request request = new Request();
-        request.setId(1);
+        request.setId(index);
         request.setData(invocation);
 
         client.send(request);
 
-        System.out.println("end send...");
-
-        System.out.println("waite...");
-        Thread.sleep(60000);
-        System.out.println("end！！！");
-
-
+        System.out.println(index + " - send end...");
     }
 }

@@ -6,6 +6,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -50,8 +51,9 @@ public class NettyServer  implements Server {
                             p.addLast(
                                     new NettyEncoder(),
                                     new NettyDecoder(),
+                                    new StringEncoder(),
                                     //new TestDecoder(),
-                                    new NettyChannelHandler());
+                                    new NettyServerHandler());
                         }
                     });
 

@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
@@ -29,7 +30,9 @@ public class NettyClient implements Client{
 
     public void send(Request request) {
         if (channel.isActive()) {
-            channel.write(request);
+            synchronized (channel) {
+                channel.write(request);
+            }
         } else {
             System.out.println("channel not active");
         }
@@ -45,8 +48,8 @@ public class NettyClient implements Client{
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline p = ch.pipeline();
-                            p.addLast(new NettyEncoder(), new NettyDecoder(),
-                                    new NettyChannelHandler());
+                            p.addLast(new NettyEncoder(), new StringDecoder(),
+                                    new NettyClientHandler());
                         }
                     });
 
@@ -63,7 +66,12 @@ public class NettyClient implements Client{
         }
     }
 
-
+    public boolean isActive() {
+        if (channel == null) {
+            return false;
+        }
+        return channel.isActive();
+    }
 
 
 }

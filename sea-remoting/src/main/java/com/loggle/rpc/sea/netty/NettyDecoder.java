@@ -36,27 +36,30 @@ public class NettyDecoder extends ByteToMessageDecoder {
         if(!decodeHeader(in)) {
             return;
         }
-        decodeBody(in, out);
+        if(decodeBody(in, out)) {
+            header = null;
+        }
     }
 
-    private void decodeBody(ByteBuf in, List<Object> out) {
+    private boolean decodeBody(ByteBuf in, List<Object> out) {
         int oldReadIdx = in.readerIndex();
         int bodyLength = Bytes.bytes2int(header, 11);
         try {
-            decodeBody0(in, out);
+            return decodeBody0(in, out);
         } catch (Exception e) {
             System.out.println("decode body error!");
             e.printStackTrace();
             System.out.println("decode body error! discard this message!");
             in.readerIndex(oldReadIdx + bodyLength);
+            return true;
         } finally {
         }
     }
-    private void decodeBody0(ByteBuf in, List<Object> out) throws IOException, ClassNotFoundException {
+    private boolean decodeBody0(ByteBuf in, List<Object> out) throws IOException, ClassNotFoundException {
         int bodyLength = Bytes.bytes2int(header, 11);
         long reqId = Bytes.bytes2long(header, 3);
         if(in.readableBytes() < bodyLength) {
-            return;
+            return false;
         }
 
         int oldReadIdx = in.readerIndex();
@@ -83,7 +86,7 @@ public class NettyDecoder extends ByteToMessageDecoder {
         }
         Object[] args = argsList.toArray();
 
-        String reqInfo = String.format("clazz=%s, method=%s, desc=%s, args=%s", clazz, method, desc, args.toString());
+        String reqInfo = String.format("reqId=%s, clazz=%s, method=%s, desc=%s, args=%s", reqId, clazz, method, desc, args.toString());
         System.out.println("reqInfo : "+reqInfo);
 
         Class<?>[] type = ReflectUtils.desc2classArray(desc);
@@ -99,21 +102,10 @@ public class NettyDecoder extends ByteToMessageDecoder {
 
         request.setData(invocation);
 
-        Class<?> aClass = Class.forName(clazz);
-        try {
-            Object o = aClass.newInstance();
-            Method method1 = o.getClass().getMethod(method, type);
-            method1.invoke(o, args);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        out.add(request);
 
+
+        return true;
     }
 
     private boolean decodeHeader(ByteBuf in) {

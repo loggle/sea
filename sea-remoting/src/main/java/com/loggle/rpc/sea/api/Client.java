@@ -11,4 +11,6 @@ public interface Client {
     void send(Request request);
 
     void connect() throws InterruptedException, Exception;
+
+    boolean isActive();
 }
