@@ -1,6 +1,4 @@
-package com.loggle.rpc.sea.api;
-
-import javax.xml.ws.Response;
+package com.loggle.rpc.sea.remoting.api;
 
 /**
  * @author guomy

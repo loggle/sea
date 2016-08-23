@@ -1,7 +1,7 @@
-package com.loggle.rpc.sea.netty;
+package com.loggle.rpc.sea.remoting.netty;
 
-import com.loggle.rpc.sea.api.Invocation;
-import com.loggle.rpc.sea.api.Request;
+import com.loggle.rpc.sea.remoting.api.Invocation;
+import com.loggle.rpc.sea.remoting.api.Request;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.ReferenceCountUtil;

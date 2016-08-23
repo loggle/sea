@@ -1,4 +1,4 @@
-package com.loggle.rpc.sea.api.constant;
+package com.loggle.rpc.sea.remoting.api.constant;
 
 /**
  * @author guomy

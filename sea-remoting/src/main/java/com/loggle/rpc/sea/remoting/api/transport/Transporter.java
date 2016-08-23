@@ -1,7 +1,7 @@
-package com.loggle.rpc.sea.api.transport;
+package com.loggle.rpc.sea.remoting.api.transport;
 
-import com.loggle.rpc.sea.api.Client;
-import com.loggle.rpc.sea.api.Server;
+import com.loggle.rpc.sea.remoting.api.Client;
+import com.loggle.rpc.sea.remoting.api.Server;
 
 /**
  * @author guomy

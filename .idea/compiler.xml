@@ -24,12 +24,14 @@
         <processorPath useClasspath="true" />
         <module name="sea-common" />
         <module name="sea-remoting" />
+        <module name="sea-rpc" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="sea" target="1.5" />
       <module name="sea-common" target="1.5" />
       <module name="sea-remoting" target="1.5" />
+      <module name="sea-rpc" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,4 +1,4 @@
-package com.loggle.rpc.sea.api.codec;
+package com.loggle.rpc.sea.remoting.api.codec;
 
 /**
  * @author guomy

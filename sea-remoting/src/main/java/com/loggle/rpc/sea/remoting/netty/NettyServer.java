@@ -1,14 +1,12 @@
-package com.loggle.rpc.sea.netty;
+package com.loggle.rpc.sea.remoting.netty;
 
-import com.loggle.rpc.sea.api.Server;
+import com.loggle.rpc.sea.remoting.api.Server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 
 /**
  * @author guomy

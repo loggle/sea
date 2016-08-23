@@ -1,12 +1,9 @@
-package com.loggle.rpc.sea.netty;
+package com.loggle.rpc.sea.remoting.netty;
 
-import com.loggle.rpc.common.io.Bytes;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
-import javax.xml.ws.Response;
 import java.util.List;
 
 /**

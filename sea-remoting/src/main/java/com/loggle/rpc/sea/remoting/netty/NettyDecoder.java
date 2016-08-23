@@ -1,11 +1,11 @@
-package com.loggle.rpc.sea.netty;
+package com.loggle.rpc.sea.remoting.netty;
 
 import com.caucho.hessian.io.HessianInput;
 import com.loggle.rpc.common.io.Bytes;
 import com.loggle.rpc.common.utils.ReflectUtils;
-import com.loggle.rpc.sea.api.Invocation;
-import com.loggle.rpc.sea.api.Request;
-import com.loggle.rpc.sea.api.constant.Constants;
+import com.loggle.rpc.sea.remoting.api.Invocation;
+import com.loggle.rpc.sea.remoting.api.Request;
+import com.loggle.rpc.sea.remoting.api.constant.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,8 +13,6 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/sea.iml" filepath="$PROJECT_DIR$/sea.iml" />
       <module fileurl="file://$PROJECT_DIR$/sea-common/sea-common.iml" filepath="$PROJECT_DIR$/sea-common/sea-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/sea-remoting/sea-remoting.iml" filepath="$PROJECT_DIR$/sea-remoting/sea-remoting.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sea-rpc/sea-rpc.iml" filepath="$PROJECT_DIR$/sea-rpc/sea-rpc.iml" />
     </modules>
   </component>
 </project>

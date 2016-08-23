@@ -1,9 +1,9 @@
 package com.loggle.rpc.sea;
 
-import com.loggle.rpc.sea.api.Client;
-import com.loggle.rpc.sea.api.Invocation;
-import com.loggle.rpc.sea.api.Request;
-import com.loggle.rpc.sea.netty.NettyTransporter;
+import com.loggle.rpc.sea.remoting.api.Client;
+import com.loggle.rpc.sea.remoting.api.Invocation;
+import com.loggle.rpc.sea.remoting.api.Request;
+import com.loggle.rpc.sea.remoting.netty.NettyTransporter;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.net.URL;
@@ -55,6 +55,11 @@ public class ClientDemo {
         for (int i=0; i< limit; i++) {
             executor.execute(new Runnable() {
                 public void run() {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     send(count);
                 }
             });

@@ -1,7 +1,7 @@
 package com.loggle.rpc.sea;
 
-import com.loggle.rpc.sea.api.Server;
-import com.loggle.rpc.sea.netty.NettyTransporter;
+import com.loggle.rpc.sea.remoting.api.Server;
+import com.loggle.rpc.sea.remoting.netty.NettyTransporter;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.net.URL;

@@ -1,11 +1,11 @@
-package com.loggle.rpc.sea.netty;
+package com.loggle.rpc.sea.remoting.netty;
 
 import com.caucho.hessian.io.HessianOutput;
 import com.loggle.rpc.common.io.Bytes;
 import com.loggle.rpc.common.utils.ReflectUtils;
-import com.loggle.rpc.sea.api.Invocation;
-import com.loggle.rpc.sea.api.Request;
-import com.loggle.rpc.sea.api.constant.Constants;
+import com.loggle.rpc.sea.remoting.api.Invocation;
+import com.loggle.rpc.sea.remoting.api.Request;
+import com.loggle.rpc.sea.remoting.api.constant.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,9 +33,10 @@ public class NettyEncoder extends MessageToByteEncoder<Request> {
 
         Bytes.int2bytes(byteBuf.readableBytes(), header, 11);
 
-        out.writeBytes(header);
-        out.writeBytes(byteBuf);
-        ctx.channel().writeAndFlush(out);
+        ByteBuf buffer = Unpooled.buffer(header.length + byteBuf.readableBytes());
+        buffer.writeBytes(header);
+        buffer.writeBytes(byteBuf);
+        ctx.writeAndFlush(buffer);
     }
 
     private ByteBuf encodeRequestData(Request request) throws IOException {
