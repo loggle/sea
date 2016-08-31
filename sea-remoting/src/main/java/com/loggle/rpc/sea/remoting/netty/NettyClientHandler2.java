@@ -1,16 +1,16 @@
 package com.loggle.rpc.sea.remoting.netty;
 
 import com.loggle.rpc.common.fileio.WriteToFile;
+import com.loggle.rpc.sea.remoting.api.Response;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.io.FileNotFoundException;
-import java.util.concurrent.Future;
 
 /**
  * Created by my on 2016/8/21.
  */
-public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
+public class NettyClientHandler2 extends SimpleChannelInboundHandler<Response> {
 
     private static WriteToFile resultFile;
 
@@ -24,13 +24,12 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Response response) throws Exception {
 
-        String[] strs = msg.split("\\|");
-        long reqId = Long.parseLong(strs[0]);
+        long reqId = response.getId();
         NettyClient.CallBack callBack = (NettyClient.CallBack)NettyClient.getFuture(reqId);
-        callBack.done(strs[1]);
-        resultFile.write(msg + "\n");
-        System.out.println("from server : " + msg);
+        callBack.done((String) response.getData());
+        resultFile.write((String) response.getData() + "\n");
+        System.out.println("from server : " + reqId + "|" + response.getData());
     }
 }

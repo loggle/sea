@@ -48,12 +48,14 @@ public class NettyEncoder extends MessageToByteEncoder<Request> {
             String desc = ReflectUtils.getDesc(invocation.getParamTypes());
 
             ByteBuf bf = Unpooled.buffer();
-            bf.writeInt(clazz.length());
-            bf.writeCharSequence(clazz, Charset.forName("UTF-8"));
-            bf.writeInt(method.length());
-            bf.writeCharSequence(method, Charset.forName("UTF-8"));
-            bf.writeInt(desc.length());
-            bf.writeCharSequence(desc, Charset.forName("UTF-8"));
+            bf.writeInt(clazz.getBytes("UTF-8").length);
+            bf.writeBytes(clazz.getBytes("UTF-8"));
+
+            bf.writeInt(method.getBytes("UTF-8").length);
+            bf.writeBytes(method.getBytes("UTF-8"));
+
+            bf.writeInt(desc.getBytes("UTF-8").length);
+            bf.writeBytes(desc.getBytes("UTF-8"));
 
             Object[] args = invocation.getArgs();
             if (args != null && args.length > 0) {

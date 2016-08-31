@@ -7,6 +7,7 @@ package com.loggle.rpc.sea.remoting.api;
 public interface Client {
 
     void send(Request request);
+    Object sendAndWait(Request request);
 
     void connect() throws InterruptedException, Exception;
 

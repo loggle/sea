@@ -47,9 +47,9 @@ public class NettyServer  implements Server {
                             ChannelPipeline p = ch.pipeline();
                             //p.addLast(new LoggingHandler(LogLevel.INFO));
                             p.addLast(
-                                    new NettyEncoder(),
+                                    new NettyResponseEncoder(),
                                     new NettyDecoder(),
-                                    new StringEncoder(),
+                                    //new StringEncoder(),
                                     //new TestDecoder(),
                                     new NettyServerHandler());
                         }

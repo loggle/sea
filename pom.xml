@@ -9,6 +9,7 @@
     <module>sea-remoting</module>
     <module>sea-common</module>
     <module>sea-rpc</module>
+    <module>sea-register</module>
   </modules>
   <packaging>pom</packaging>
 

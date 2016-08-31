@@ -5,6 +5,7 @@ import com.loggle.rpc.common.io.Bytes;
 import com.loggle.rpc.common.utils.ReflectUtils;
 import com.loggle.rpc.sea.remoting.api.Invocation;
 import com.loggle.rpc.sea.remoting.api.Request;
+import com.loggle.rpc.sea.remoting.api.Response;
 import com.loggle.rpc.sea.remoting.api.constant.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -21,13 +22,15 @@ import java.util.List;
  * @author guomy
  * @create 2016-08-05 16:38.
  */
-public class NettyDecoder extends ByteToMessageDecoder {
+public class NettyResponseDecoder extends ByteToMessageDecoder {
     private byte[] header;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if (header != null) {
-            decodeBody(in, out);
+            if(decodeBody(in, out)) {
+                header = null;
+            }
             return;
         }
 
@@ -45,12 +48,12 @@ public class NettyDecoder extends ByteToMessageDecoder {
         try {
             return decodeBody0(in, out);
         } catch (Exception e) {
+            System.out.println("decode body error!");
             e.printStackTrace();
             System.out.println("decode body error! discard this message!");
             in.readerIndex(oldReadIdx + bodyLength);
             return true;
         } finally {
-            header = null;
         }
     }
     private boolean decodeBody0(ByteBuf in, List<Object> out) throws IOException, ClassNotFoundException {
@@ -66,46 +69,17 @@ public class NettyDecoder extends ByteToMessageDecoder {
         int length = body.readInt();
         byte[] bytes = new byte[length];
         body.readBytes(bytes, 0, length);
-        String clazz = new String(bytes, "UTF-8");
-        length = body.readInt();
-        bytes = new byte[length];
-        body.readBytes(bytes, 0, length);
-        String method = new String(bytes, "UTF-8");
-        length = body.readInt();
-        bytes = new byte[length];
-        body.readBytes(bytes, 0, length);
-        String desc = new String(bytes, "UTF-8");
 
-        List<Object> argsList = new ArrayList<Object>();
-        while (body.readableBytes() > 0) {
-            length = body.readInt();
-            ByteBuf temp = Unpooled.buffer(length);
-            body.readBytes(temp);
-            byte[] bytess = new byte[length];
-            temp.getBytes(0, bytess);
-            ByteArrayInputStream is = new ByteArrayInputStream(bytess);
-            HessianInput hi = new HessianInput(is);
-            argsList.add(hi.readObject());
-        }
-        Object[] args = argsList.toArray();
+        String msg = new String(bytes, "UTF-8");
 
-        String reqInfo = String.format("reqId=%s, clazz=%s, method=%s, desc=%s, args=%s", reqId, clazz, method, desc, args.toString());
+        String reqInfo = String.format("respId=%s, msg=%s", reqId, msg);
         System.out.println("reqInfo : "+reqInfo);
 
-        Class<?>[] type = ReflectUtils.desc2classArray(desc);
 
-        Request request = new Request();
-        request.setId(reqId);
-
-        Invocation invocation = new Invocation();
-        invocation.setClazz(clazz);
-        invocation.setMethod(method);
-        invocation.setParamTypes(type);
-        invocation.setArgs(args);
-
-        request.setData(invocation);
-
-        out.add(request);
+        Response response = new Response();
+        response.setId(reqId);
+        response.setData(msg);
+        out.add(response);
 
 
         return true;
@@ -115,6 +89,7 @@ public class NettyDecoder extends ByteToMessageDecoder {
         if (in.readableBytes() < 15) {
             return false;
         }
+        System.out.println("**************************************************************" + Thread.currentThread().getId() + "--" + Thread.currentThread().getName());
         int oldReadIdx = in.readerIndex();
         short magic = in.readShort();
         while(magic != Constants.MAGIC) {//循环读取，直到能读取出包头
