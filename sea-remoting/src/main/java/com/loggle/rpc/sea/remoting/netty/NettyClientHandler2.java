@@ -27,9 +27,15 @@ public class NettyClientHandler2 extends SimpleChannelInboundHandler<Response> {
     protected void channelRead0(ChannelHandlerContext ctx, Response response) throws Exception {
 
         long reqId = response.getId();
-        NettyClient.CallBack callBack = (NettyClient.CallBack)NettyClient.getFuture(reqId);
-        callBack.done((String) response.getData());
-        resultFile.write((String) response.getData() + "\n");
-        System.out.println("from server : " + reqId + "|" + response.getData());
+        //System.out.println("from server : " + reqId + "|" + response.getData() + " | " + System.currentTimeMillis());
+        try {
+            NettyClient.CallBack callBack = (NettyClient.CallBack)NettyClient.getFuture(reqId);
+            callBack.done((String) response.getData());
+            System.out.println(reqId + " callBack done at " +System.currentTimeMillis());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //resultFile.write((String) response.getData() + "\n");
+
     }
 }

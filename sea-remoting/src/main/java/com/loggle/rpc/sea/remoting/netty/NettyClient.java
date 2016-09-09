@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author guomy
@@ -23,6 +25,7 @@ public class NettyClient implements Client {
     private String host;
     private int port;
     private Channel channel;
+    private Lock sendLock = new ReentrantLock();
 
     private static Map<Long, Future> futureMap = new ConcurrentHashMap<Long, Future>();
 
@@ -43,9 +46,14 @@ public class NettyClient implements Client {
 
     public Object sendAndWait(Request request) {
         if (channel.isActive()) {
-            synchronized (channel) {
+            try {
+                sendLock.lock();
                 futureMap.put(request.getId(), new CallBack(request));
-                channel.write(request);
+                //channel.write(request);
+                channel.writeAndFlush(request);
+                System.out.println("channel write data at " + System.currentTimeMillis());
+            } finally {
+                sendLock.unlock();
             }
         } else {
             System.out.println("channel not active");
@@ -54,8 +62,9 @@ public class NettyClient implements Client {
 
         try {
             try {
-                return future.get(20, TimeUnit.SECONDS);
+                return future.get(200, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
+                System.out.println("result timeout req id = " + request.getId());
                 e.printStackTrace();
             }
         } catch (InterruptedException e) {
@@ -72,7 +81,7 @@ public class NettyClient implements Client {
 
     public void connect() throws Exception {
         // Configure the client.
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new NioEventLoopGroup(5);
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)

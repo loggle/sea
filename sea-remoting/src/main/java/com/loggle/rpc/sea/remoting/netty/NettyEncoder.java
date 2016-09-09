@@ -1,6 +1,7 @@
 package com.loggle.rpc.sea.remoting.netty;
 
 import com.caucho.hessian.io.HessianOutput;
+import com.loggle.rpc.common.fileio.WriteToFile;
 import com.loggle.rpc.common.io.Bytes;
 import com.loggle.rpc.common.utils.ReflectUtils;
 import com.loggle.rpc.sea.remoting.api.Invocation;
@@ -12,16 +13,31 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author guomy
  * @create 2016-08-05 16:38.
  */
 public class NettyEncoder extends MessageToByteEncoder<Request> {
+    private static WriteToFile sendFile;
+    AtomicLong sendDataSize = new AtomicLong(0);
+
+    static {
+        sendFile = new WriteToFile("e:/test/send2.log");
+        try {
+            sendFile.init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, Request request, ByteBuf out) throws Exception {
+        System.out.println("encode request " + request.getId() + " at " + System.currentTimeMillis());
         byte[] header = new byte[15];
         Bytes.short2bytes(Constants.MAGIC, header);
         header[2] = 0;
@@ -32,11 +48,15 @@ public class NettyEncoder extends MessageToByteEncoder<Request> {
         if(byteBuf == null) return;
 
         Bytes.int2bytes(byteBuf.readableBytes(), header, 11);
+        int count = byteBuf.readableBytes();
+
 
         ByteBuf buffer = Unpooled.buffer(header.length + byteBuf.readableBytes());
         buffer.writeBytes(header);
         buffer.writeBytes(byteBuf);
         ctx.writeAndFlush(buffer);
+        //sendFile.write("send data req id = " + request.getId() + "\n");
+        System.out.println(request.getId() + " need time " + System.currentTimeMillis() + "-------------------send data size: " + sendDataSize.addAndGet(count+15));
     }
 
     private ByteBuf encodeRequestData(Request request) throws IOException {

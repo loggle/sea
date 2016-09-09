@@ -22,9 +22,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Request> {
         Class[] type = invocation.getParamTypes();
         Object[] args = invocation.getArgs();
 
+        System.out.println("reqId=" + reqId + " before invoke method at " + System.currentTimeMillis());
+
         String implName = clazz.substring(0, clazz.lastIndexOf(".") + 1) + clazz.substring(clazz.lastIndexOf(".")).substring(2) + "Impl";
         Class<?> aClass = Class.forName(implName);
-
 
         try {
             Object o = aClass.newInstance();
@@ -34,6 +35,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Request> {
             response.setId(reqId);
             response.setData(rest);
             ctx.channel().writeAndFlush(response);
+
+            System.out.println("reqId=" + reqId + " write response at " + System.currentTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

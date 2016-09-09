@@ -1,6 +1,7 @@
 package com.loggle.rpc.sea.remoting.netty;
 
 import com.caucho.hessian.io.HessianInput;
+import com.loggle.rpc.common.fileio.WriteToFile;
 import com.loggle.rpc.common.io.Bytes;
 import com.loggle.rpc.common.utils.ReflectUtils;
 import com.loggle.rpc.sea.remoting.api.Invocation;
@@ -12,10 +13,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author guomy
@@ -23,6 +26,19 @@ import java.util.List;
  */
 public class NettyDecoder extends ByteToMessageDecoder {
     private byte[] header;
+
+    private static WriteToFile reciFile;
+
+    static {
+        reciFile = new WriteToFile("e:/test/reciFile2.log");
+        try {
+            reciFile.init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    AtomicLong getDataSize = new AtomicLong(0);
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -60,6 +76,8 @@ public class NettyDecoder extends ByteToMessageDecoder {
             return false;
         }
 
+        System.out.println(reqId + " decode start " + System.currentTimeMillis() + "---------------------get data size: " + getDataSize.addAndGet(bodyLength + 15));
+
         ByteBuf body = Unpooled.buffer(bodyLength);
         in.readBytes(body);
 
@@ -89,8 +107,9 @@ public class NettyDecoder extends ByteToMessageDecoder {
         }
         Object[] args = argsList.toArray();
 
-        String reqInfo = String.format("reqId=%s, clazz=%s, method=%s, desc=%s, args=%s", reqId, clazz, method, desc, args.toString());
+        String reqInfo = String.format(System.currentTimeMillis() + "      reqId=%s, clazz=%s, method=%s, desc=%s, args=%s", reqId, clazz, method, desc, args.toString());
         System.out.println("reqInfo : "+reqInfo);
+        //reciFile.write("reci reqid = " + reqId + "\n");
 
         Class<?>[] type = ReflectUtils.desc2classArray(desc);
 
@@ -129,6 +148,8 @@ public class NettyDecoder extends ByteToMessageDecoder {
         byte flag = in.readByte();
 
         long reqId = in.readLong();
+
+        //System.out.println("get req id = " + reqId);
 
         int bodyLength = in.readInt();
 

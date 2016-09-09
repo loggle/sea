@@ -51,9 +51,10 @@ public class RpcProxy implements InvocationHandler {
 
         String msg = (String) args[0];
 
-        System.out.println("send data :" + reqId + "|" + msg);
-        sendFile.write(reqId + "|" + msg + "\n");
+        //System.out.println("send data :" + reqId + "|" + msg);
+        //sendFile.write(reqId + "|" + msg + "\n");
 
+        //System.out.println("befor proxy send data at " + System.currentTimeMillis());
         Object result = client.sendAndWait(request);
         return result;
     }

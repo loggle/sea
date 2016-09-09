@@ -38,6 +38,8 @@ public class NettyResponseEncoder extends MessageToByteEncoder<Response> {
         buffer.writeBytes(header);
         buffer.writeBytes(byteBuf);
         ctx.writeAndFlush(buffer);
+
+        System.out.println(response.getId() + "  result binary data at " + System.currentTimeMillis());
     }
 
     private ByteBuf encodeResponseData(Response response) throws IOException {

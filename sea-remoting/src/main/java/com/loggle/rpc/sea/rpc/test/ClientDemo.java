@@ -1,9 +1,10 @@
-package com.loggle.rpc.sea;
+package com.loggle.rpc.sea.rpc.test;
 
 import com.loggle.rpc.sea.remoting.api.Client;
 import com.loggle.rpc.sea.remoting.api.Invocation;
 import com.loggle.rpc.sea.remoting.api.Request;
 import com.loggle.rpc.sea.remoting.netty.NettyTransporter;
+import com.loggle.rpc.sea.rpc.test.rpc.IHelloWorld;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.net.URL;
@@ -72,12 +73,12 @@ public class ClientDemo {
         int index = count.incrementAndGet();
         System.out.println(index + "--start send...");
         Invocation invocation = new Invocation();
-        invocation.setClazz(GetChannel.class.getName());
+        invocation.setClazz(IHelloWorld.class.getName());
 
         Class[] type = {String.class};
         invocation.setParamTypes(type);
         try {
-            invocation.setMethod(GetChannel.class.getMethod("sayHello", String.class).getName());
+            invocation.setMethod(IHelloWorld.class.getMethod("sayHello", String.class).getName());
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

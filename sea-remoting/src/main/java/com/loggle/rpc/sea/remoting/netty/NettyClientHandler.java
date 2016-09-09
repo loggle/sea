@@ -30,7 +30,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
         long reqId = Long.parseLong(strs[0]);
         NettyClient.CallBack callBack = (NettyClient.CallBack)NettyClient.getFuture(reqId);
         callBack.done(strs[1]);
-        resultFile.write(msg + "\n");
+        //resultFile.write(msg + "\n");
         System.out.println("from server : " + msg);
     }
 }

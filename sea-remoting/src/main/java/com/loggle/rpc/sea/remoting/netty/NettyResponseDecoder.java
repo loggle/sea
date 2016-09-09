@@ -1,6 +1,7 @@
 package com.loggle.rpc.sea.remoting.netty;
 
 import com.caucho.hessian.io.HessianInput;
+import com.loggle.rpc.common.fileio.WriteToFile;
 import com.loggle.rpc.common.io.Bytes;
 import com.loggle.rpc.common.utils.ReflectUtils;
 import com.loggle.rpc.sea.remoting.api.Invocation;
@@ -13,6 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,6 +26,18 @@ import java.util.List;
  */
 public class NettyResponseDecoder extends ByteToMessageDecoder {
     private byte[] header;
+
+    private static WriteToFile resultFile;
+
+
+    static {
+        resultFile = new WriteToFile("e:/test/result2.log");
+        try {
+            resultFile.init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -72,8 +86,8 @@ public class NettyResponseDecoder extends ByteToMessageDecoder {
 
         String msg = new String(bytes, "UTF-8");
 
-        String reqInfo = String.format("respId=%s, msg=%s", reqId, msg);
-        System.out.println("reqInfo : "+reqInfo);
+        String reqInfo = String.format("respId=%s, msg=%s\n", reqId, msg);
+        //resultFile.write(reqInfo);
 
 
         Response response = new Response();
@@ -89,7 +103,7 @@ public class NettyResponseDecoder extends ByteToMessageDecoder {
         if (in.readableBytes() < 15) {
             return false;
         }
-        System.out.println("**************************************************************" + Thread.currentThread().getId() + "--" + Thread.currentThread().getName());
+        //System.out.println("**************************************************************" + Thread.currentThread().getId() + "--" + Thread.currentThread().getName());
         int oldReadIdx = in.readerIndex();
         short magic = in.readShort();
         while(magic != Constants.MAGIC) {//循环读取，直到能读取出包头

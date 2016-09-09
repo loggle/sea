@@ -6,6 +6,10 @@ package com.loggle.rpc.sea.remoting.netty;
  */
 public class Test {
     public static void main(String[] args) {
-        byte b = 0x0f;
+        int i = 0;
+        int j = 15;
+        for(int k=0; k<100; k++) {
+            System.out.println(k & (j-1));
+        }
     }
 }

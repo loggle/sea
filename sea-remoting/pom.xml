@@ -36,6 +36,8 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
+            <!--<artifactId>netty-all-me</artifactId>
+            <version>4.1.5.Final-SNAPSHOT</version>-->
             <artifactId>netty-all</artifactId>
             <version>4.1.4.Final</version>
         </dependency>

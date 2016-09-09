@@ -30,12 +30,18 @@ public class ClientTest extends TestCase {
         final IHelloWorld c = (IHelloWorld) rpcProxyBuilder.getProxy(IHelloWorld.class);
         final CountDownLatch countDownLatch = new CountDownLatch(100);
 
-        for(int j=0; j<100; j++) {
+        for(int j=0; j<2; j++) {
             Thread thread = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        for(int i=0; i<100; i++) {
+                        for(int i=0; i<10; i++) {
                             String loggle = c.sayHello("loggle_" + i);
+//
+//                            try {
+//                                Thread.sleep(1000 * 30);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
                             System.out.println("server result: " + loggle);
                         }
                     } finally {
